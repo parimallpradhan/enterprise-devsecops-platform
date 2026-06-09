@@ -58,6 +58,23 @@ pipeline {
             }
         }
 
+stage('SonarQube Analysis') {
+
+    steps {
+
+        dir('devsecops-app') {
+
+            withSonarQubeEnv('sonarqube') {
+
+                sh '''
+                mvn sonar:sonar \
+                -Dsonar.projectKey=devsecops-app \
+                -Dsonar.projectName=devsecops-app
+                '''
+            }
+        }
+    }
+}
         stage('Package') {
 
             steps {
