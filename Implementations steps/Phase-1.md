@@ -35,6 +35,8 @@ Recommended:
 * t3.large minimum
 * 30GB storage
 
+<img width="1568" height="268" alt="image" src="https://github.com/user-attachments/assets/9e9f727c-9395-4d52-ae72-1dca6e4237c3" />
+
 ---
 
 # STEP 2 — Open Security Group Ports
@@ -49,6 +51,10 @@ Add inbound rules:
 | 9090  | Prometheus         |
 | 16686 | Jaeger             |
 | 3100  | Loki               |
+| 8081  | Java app           |
+
+
+<img width="1830" height="797" alt="image" src="https://github.com/user-attachments/assets/75eadbbd-7c88-41a8-aca0-de28627fa870" />
 
 ---
 
@@ -67,6 +73,7 @@ ssh -i key.pem ubuntu@EC2_PUBLIC_IP
 ```bash id="inst3"
 sudo apt update && sudo apt upgrade -y
 ```
+<img width="1908" height="245" alt="image" src="https://github.com/user-attachments/assets/60454457-4713-4e29-bb5d-bec04ced5086" />
 
 ---
 
