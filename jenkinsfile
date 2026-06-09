@@ -38,6 +38,24 @@ pipeline {
                     sh 'mvn test'
                 }
             }
+
+            post {
+
+                always {
+
+                    junit 'devsecops-app/target/surefire-reports/*.xml'
+                }
+
+                success {
+
+                    echo 'All unit tests passed successfully'
+                }
+
+                failure {
+
+                    echo 'Unit tests failed. Stopping pipeline.'
+                }
+            }
         }
 
         stage('Package') {
@@ -82,4 +100,3 @@ pipeline {
         }
     }
 }
-
