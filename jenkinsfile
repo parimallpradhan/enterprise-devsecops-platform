@@ -96,6 +96,17 @@ stage('Quality Gate') {
             }
         }
 
+stage('Publish Artifact to Nexus') {
+
+    steps {
+
+        dir('devsecops-app') {
+
+            sh 'mvn deploy'
+        }
+    }
+}
+
         stage('Application Smoke Test') {
 
             steps {
