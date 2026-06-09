@@ -107,7 +107,6 @@ stage('Publish Artifact to Nexus') {
     }
 }
 
-```groovy id="3yqz3q"
 stage('Application Smoke Test') {
 
     steps {
