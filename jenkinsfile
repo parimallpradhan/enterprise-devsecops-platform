@@ -43,7 +43,8 @@ pipeline {
 
                 always {
 
-                   junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
+                    junit allowEmptyResults: true,
+                    testResults: '**/target/surefire-reports/*.xml'
                 }
 
                 success {
@@ -58,139 +59,149 @@ pipeline {
             }
         }
 
-stage('SonarQube Analysis') {
+        stage('SonarQube Analysis') {
 
-    steps {
+            steps {
 
-        dir('devsecops-app') {
+                dir('devsecops-app') {
 
-            withSonarQubeEnv('sonarqube') {
+                    withSonarQubeEnv('sonarqube') {
 
-                sh '''
-                mvn sonar:sonar \
-                -Dsonar.projectKey=devsecops-app \
-                -Dsonar.projectName=devsecops-app
-                '''
+                        sh '''
+                        mvn sonar:sonar \
+                        -Dsonar.projectKey=devsecops-app \
+                        -Dsonar.projectName=devsecops-app
+                        '''
+                    }
+                }
             }
         }
-    }
-}
-stage('Quality Gate') {
 
-    steps {
+        stage('Quality Gate') {
 
-        timeout(time: 5, unit: 'MINUTES') {
+            steps {
 
-            waitForQualityGate abortPipeline: true
+                timeout(time: 5, unit: 'MINUTES') {
+
+                    waitForQualityGate abortPipeline: true
+                }
+            }
         }
-    }
-}
 
-stage('Trivy Filesystem Scan') {
+        stage('Trivy Filesystem Scan') {
 
-    steps {
+            steps {
 
-        dir('devsecops-app') {
+                dir('devsecops-app') {
 
-            sh '''
-            mkdir -p trivy-reports
+                    sh '''
+                    mkdir -p trivy-reports
 
-            trivy fs . \
-            --severity CRITICAL,HIGH \
-            --exit-code 0 \
-            --format json \
-            --output trivy-reports/trivy-report.json
+                    trivy fs . \
+                    --severity CRITICAL,HIGH \
+                    --exit-code 0 \
+                    --format json \
+                    --output trivy-reports/trivy-report.json
 
-            trivy fs . \
-            --severity CRITICAL,HIGH \
-            --exit-code 0 \
-            --format table \
-            > trivy-reports/trivy-report.txt
-            '''
+                    trivy fs . \
+                    --severity CRITICAL,HIGH \
+                    --exit-code 0 \
+                    --format table \
+                    > trivy-reports/trivy-report.txt
+                    '''
+                }
+            }
+
+            post {
+
+                always {
+
+                    archiveArtifacts artifacts: 'devsecops-app/trivy-reports/*',
+                    allowEmptyArchive: true
+                }
+            }
         }
+
+        stage('Package') {
+
+            steps {
+
+                dir('devsecops-app') {
+
+                    sh 'mvn package'
+                }
+            }
+        }
+
+        stage('Publish Artifact to Nexus') {
+
+            steps {
+
+                dir('devsecops-app') {
+
+                    sh 'mvn deploy'
+                }
+            }
+        }
+
+        stage('Application Smoke Test') {
+
+            steps {
+
+                dir('devsecops-app') {
+
+                    sh '''
+                    echo "===== TARGET DIRECTORY ====="
+
+                    ls -lrth target/
+
+                    echo "===== STARTING APPLICATION ====="
+
+                    nohup java -jar target/*.jar > app.log 2>&1 &
+
+                    sleep 30
+
+                    echo "===== APPLICATION LOGS ====="
+
+                    cat app.log
+
+                    echo "===== RUNNING PORTS ====="
+
+                    netstat -tulpn | grep 8082 || true
+
+                    echo "===== HEALTH CHECK ====="
+
+                    curl -v http://localhost:8082/actuator/health
+                    '''
+                }
+            }
+        }
+
+        stage('Docker Build') {
+
+            steps {
+
+                dir('devsecops-app') {
+
+                    sh '''
+                    docker build -t parimal1984/devsecops-app:${BUILD_NUMBER} .
+                    '''
+                }
+            }
+        }
+
     }
 
     post {
 
         always {
 
-            archiveArtifacts artifacts: 'devsecops-app/trivy-reports/*',
+            sh '''
+            pkill -f devsecops-app || true
+            '''
+
+            archiveArtifacts artifacts: '**/target/*.jar',
             allowEmptyArchive: true
         }
     }
 }
-
-  stage('Publish Artifact to Nexus') {
-
-    steps {
-
-        dir('devsecops-app') {
-
-            sh 'mvn deploy'
-        }
-    }
-}
-
-stage('Application Smoke Test') {
-
-    steps {
-
-        dir('devsecops-app') {
-
-            sh '''
-            echo "===== TARGET DIRECTORY ====="
-
-            ls -lrth target/
-
-            echo "===== STARTING APPLICATION ====="
-
-            nohup java -jar target/*.jar > app.log 2>&1 &
-
-            sleep 30
-
-            echo "===== APPLICATION LOGS ====="
-
-            cat app.log
-
-            echo "===== RUNNING PORTS ====="
-
-            netstat -tulpn | grep 8082 || true
-
-            echo "===== HEALTH CHECK ====="
-
-            curl -v http://localhost:8082/actuator/health
-            '''
-        }
-    }
-}
-
-}   // <-- ADD THIS CLOSING BRACE
-
-stage('Docker Build') {
-
-    steps {
-
-        dir('devsecops-app') {
-
-            sh '''
-            docker build -t parimal1984/devsecops-app:${BUILD_NUMBER} .
-            '''
-        }
-    }
-}
-
-post {
-
-    always {
-
-        sh '''
-        pkill -f devsecops-app || true
-        '''
-
-        archiveArtifacts artifacts: '**/target/*.jar',
-        allowEmptyArchive: true
-    }
-}
-
-}
-
