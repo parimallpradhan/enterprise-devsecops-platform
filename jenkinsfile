@@ -110,6 +110,16 @@ stage('Trivy Filesystem Scan') {
         }
     }
 
+    post {
+
+        always {
+
+            archiveArtifacts artifacts: 'devsecops-app/trivy-reports/*',
+            allowEmptyArchive: true
+        }
+    }
+}
+
   stage('Publish Artifact to Nexus') {
 
     steps {
