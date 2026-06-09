@@ -119,7 +119,7 @@ stage('Publish Artifact to Nexus') {
 
                     sleep 20
 
-                    sh 'curl -f http://localhost:8081/health'
+                    sh 'curl -f http://localhost:8082/health'
                 }
             }
         }
