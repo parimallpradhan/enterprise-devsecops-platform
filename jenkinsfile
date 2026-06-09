@@ -85,6 +85,21 @@ stage('Quality Gate') {
         }
     }
 }
+
+stage('Trivy Filesystem Scan') {
+
+    steps {
+
+        dir('devsecops-app') {
+
+            sh '''
+            trivy fs . \
+            --severity HIGH,CRITICAL \
+            --exit-code 1
+            '''
+        }
+    }
+}
         stage('Package') {
 
             steps {
