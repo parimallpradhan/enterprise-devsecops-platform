@@ -107,23 +107,35 @@ stage('Publish Artifact to Nexus') {
     }
 }
 
-        stage('Application Smoke Test') {
+stage('Application Smoke Test') {
 
-            steps {
+    steps {
 
-                dir('devsecops-app') {
+        dir('devsecops-app') {
 
-                    sh '''
-                    nohup java -jar target/devsecops-app-1.0.jar > app.log 2>&1 &
-                    '''
+            sh '''
+            echo "===== TARGET DIRECTORY ====="
+            ls -lrth target/
 
-                    sleep 20
+            echo "===== STARTING APPLICATION ====="
 
-                    sh 'curl -f http://localhost:8082/health'
-                }
-            }
+            nohup java -jar target/*.jar > app.log 2>&1 &
+
+            sleep 30
+
+            echo "===== APPLICATION LOGS ====="
+            cat app.log
+
+            echo "===== RUNNING PORTS ====="
+            netstat -tulpn | grep 8082 || true
+
+            echo "===== HEALTH CHECK ====="
+
+            curl -v http://localhost:8082/actuator/health
+            '''
         }
     }
+}
 
     post {
 
