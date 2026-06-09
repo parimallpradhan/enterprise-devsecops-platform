@@ -107,6 +107,7 @@ stage('Publish Artifact to Nexus') {
     }
 }
 
+```groovy id="3yqz3q"
 stage('Application Smoke Test') {
 
     steps {
@@ -115,6 +116,7 @@ stage('Application Smoke Test') {
 
             sh '''
             echo "===== TARGET DIRECTORY ====="
+
             ls -lrth target/
 
             echo "===== STARTING APPLICATION ====="
@@ -124,9 +126,11 @@ stage('Application Smoke Test') {
             sleep 30
 
             echo "===== APPLICATION LOGS ====="
+
             cat app.log
 
             echo "===== RUNNING PORTS ====="
+
             netstat -tulpn | grep 8082 || true
 
             echo "===== HEALTH CHECK ====="
@@ -137,16 +141,19 @@ stage('Application Smoke Test') {
     }
 }
 
-    post {
+}   // <-- ADD THIS CLOSING BRACE
 
-        always {
+post {
 
-            sh '''
-            pkill -f devsecops-app || true
-            '''
+    always {
 
-            archiveArtifacts artifacts: '**/target/*.jar',
-            allowEmptyArchive: true
-        }
+        sh '''
+        pkill -f devsecops-app || true
+        '''
+
+        archiveArtifacts artifacts: '**/target/*.jar',
+        allowEmptyArchive: true
     }
+}
+
 }
