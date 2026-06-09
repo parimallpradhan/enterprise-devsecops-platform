@@ -1,4 +1,97 @@
 
+```text id="proj1"
+project-root/
+│
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   ├── resources/
+│   │   └── webapp/
+│   │
+│   └── test/
+│       ├── java/
+│       ├── resources/
+│       └── webapp/
+│
+├── target/
+├── pom.xml
+└── README.md
+```
+
+---
+
+# Jenkins Pipeline
+
+```text id="proj31"
+GitHub
+   ↓
+Jenkins
+   ↓
+Maven Build
+   ↓
+Unit Test
+   ↓
+SonarQube
+   ↓
+Docker Build
+   ↓
+Trivy Scan
+   ↓
+Deploy
+```
+
+---
+
+# PHASE 9 — OBSERVABILITY
+
+# Metrics
+
+Using:
+
+* Prometheus
+
+---
+
+# Logs
+
+Using:
+
+* Grafana Loki
+
+---
+
+# Traces
+
+Using:
+
+* Jaeger
+
+---
+
+
+```text id="proj32"
+Developer
+   ↓
+GitHub
+   ↓
+Jenkins
+   ↓
+Maven
+   ↓
+Security Scan
+   ↓
+Docker
+   ↓
+Kubernetes
+   ↓
+Prometheus
+   ↓
+Grafana
+```
+
+
+
+
 # DevOps ENTERPRISE ARCHITECTURE
 
 ```text id="final1"
