@@ -42,33 +42,6 @@ Deploy
 
 ---
 
-# PHASE 9 — OBSERVABILITY
-
-# Metrics
-
-Using:
-
-* Prometheus
-
----
-
-# Logs
-
-Using:
-
-* Grafana Loki
-
----
-
-# Traces
-
-Using:
-
-* Jaeger
-
----
-
-
 ```text id="proj32"
 Developer
    ↓
