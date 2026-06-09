@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'maven3'
+        jdk 'jdk21'
+    }
+
+
+ stages {
+        stage('Checkout') {
+            steps {
+                // Check out the source code from the repository
+                git branch: 'main', url: 'https://github.com/parimallpradhan/enterprise-devsecops-platform.git'
+            }
+        }
+        
+        stage('Compile') {
+            steps {
+                // Compile the code using Maven
+                sh 'mvn compile'
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                // Run tests using Maven
+                sh 'mvn test'
+            }
+        }
+        
+        stage('Package') {
+            steps {
+                // Package the application using Maven
+                sh 'mvn package'
+            }
+        }
+    }
+    
+    post {
+        always {
+            // Archive the build artifacts
+            archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
+        }
+    }
+}
