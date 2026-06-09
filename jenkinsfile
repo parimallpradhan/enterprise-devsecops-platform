@@ -166,6 +166,19 @@ stage('Application Smoke Test') {
 
 }   // <-- ADD THIS CLOSING BRACE
 
+stage('Docker Build') {
+
+    steps {
+
+        dir('devsecops-app') {
+
+            sh '''
+            docker build -t parimal1984/devsecops-app:${BUILD_NUMBER} .
+            '''
+        }
+    }
+}
+
 post {
 
     always {
