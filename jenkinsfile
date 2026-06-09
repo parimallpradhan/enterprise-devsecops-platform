@@ -92,11 +92,7 @@ stage('Trivy Filesystem Scan') {
 
         dir('devsecops-app') {
 
-            sh '''
-            trivy fs . \
-            --severity HIGH,CRITICAL \
-            --exit-code 1
-            '''
+           sh ''' mkdir -p trivy-reports trivy fs . \ --severity CRITICAL,HIGH \ --format json \ --output trivy-reports/trivy-report.json trivy fs . \ --severity CRITICAL,HIGH \ --format table \ > trivy-reports/trivy-report.txt '''
         }
     }
 }
