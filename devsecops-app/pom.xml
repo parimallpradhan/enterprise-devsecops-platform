@@ -45,7 +45,7 @@
         <id>maven-snapshots</id>
 
         <url>
-        http://43.204.102.255:8081/repository/maven-snapshots/
+        http://http://13.235.91.185:8081/repository/maven-snapshots/
         </url>
 
     </snapshotRepository>
@@ -55,7 +55,7 @@
         <id>maven-releases</id>
 
         <url>
-        http://43.204.102.255:8081/repository/maven-releases/
+        http://http://13.235.91.185:8081/repository/maven-releases/
         </url>
 
     </repository>
