@@ -55,7 +55,7 @@
         <id>maven-releases</id>
 
         <url>
-        http://http://13.235.91.185:8081/repository/maven-releases/
+        http://13.235.91.185:8081/repository/maven-releases/
         </url>
 
     </repository>
