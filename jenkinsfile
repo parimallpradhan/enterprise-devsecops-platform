@@ -229,16 +229,24 @@ pipeline {
             }
         }
 
-stage('Docker Build') {
+stage('Docker Push to DockerHub') {
 
     steps {
 
-        dir('devsecops-app') {
+        script {
 
-            sh '''
-            docker build \
-            -t parimal1984/devsecops-app:${BUILD_NUMBER} .
-            '''
+            withCredentials([usernamePassword(
+                credentialsId: 'dockerhub-creds',
+                usernameVariable: 'DOCKER_USER',
+                passwordVariable: 'DOCKER_PASS'
+            )]) {
+
+                sh '''
+                echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
+                docker push $DOCKER_USER/devsecops-app:${BUILD_NUMBER}
+                '''
+            }
         }
     }
 }
