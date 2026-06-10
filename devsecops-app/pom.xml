@@ -45,7 +45,7 @@
         <id>maven-snapshots</id>
 
         <url>
-        http://http://13.235.91.185:8081/repository/maven-snapshots/
+        http://13.235.91.185:8081/repository/maven-snapshots/
         </url>
 
     </snapshotRepository>
