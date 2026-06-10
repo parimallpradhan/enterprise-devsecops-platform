@@ -183,12 +183,8 @@ pipeline {
 
                 dir('devsecops-app') {
 
-                    sh '''
-                    export DOCKER_BUILDKIT=1
+              docker build -t parimal1984/devsecops-app:${BUILD_NUMBER} .
 
-                    docker build \
-                    -t parimal1984/devsecops-app:${BUILD_NUMBER} .
-                    '''
                 }
             }
         }
