@@ -183,8 +183,10 @@ pipeline {
 
                 dir('devsecops-app') {
 
-              docker build -t parimal1984/devsecops-app:${BUILD_NUMBER} .
-
+                    sh '''
+                    docker build \
+                    -t parimal1984/devsecops-app:${BUILD_NUMBER} .
+                    '''
                 }
             }
         }
@@ -225,28 +227,29 @@ pipeline {
             }
         }
 
-stage('Docker Push to DockerHub') {
+        stage('Docker Push to DockerHub') {
 
-    steps {
+            steps {
 
-        script {
+                script {
 
-            withCredentials([usernamePassword(
-                credentialsId: 'dockerhub-creds',
-                usernameVariable: 'DOCKER_USER',
-                passwordVariable: 'DOCKER_PASS'
-            )]) {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
 
-                sh '''
-                echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        sh '''
+                        echo "$DOCKER_PASS" | docker login \
+                        -u "$DOCKER_USER" --password-stdin
 
-                docker push $DOCKER_USER/devsecops-app:${BUILD_NUMBER}
-                '''
+                        docker push \
+                        $DOCKER_USER/devsecops-app:${BUILD_NUMBER}
+                        '''
+                    }
+                }
             }
         }
-    }
-}
-
     }
 
     post {
@@ -262,4 +265,3 @@ stage('Docker Push to DockerHub') {
         }
     }
 }
-
