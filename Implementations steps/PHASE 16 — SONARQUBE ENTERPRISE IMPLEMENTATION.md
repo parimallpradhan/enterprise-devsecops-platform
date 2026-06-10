@@ -1,6 +1,3 @@
-Excellent.
-Now your pipeline is reaching real enterprise DevSecOps architecture level.
-
 Your next implementation should be:
 
 ```text id="arch1"
@@ -197,6 +194,12 @@ sudo systemctl enable docker
 
 ```bash id="arch9"
 sudo systemctl start docker
+```
+```bash id="arch9"
+sudo usermod -aG docker $USER
+```
+```
+newgrp docker
 ```
 
 ---
