@@ -1,0 +1,155 @@
+pipeline {
+
+    agent any
+
+    tools {
+        maven 'maven3'
+        jdk 'jdk21'
+    }
+
+    stages {
+
+        stage('Checkout') {
+
+            steps {
+
+                git branch: 'main',
+                url: 'https://github.com/parimallpradhan/enterprise-devsecops-platform.git'
+            }
+        }
+
+        stage('Compile') {
+
+            steps {
+
+                dir('devsecops-app') {
+
+                    sh 'mvn clean compile'
+                }
+            }
+        }
+
+        stage('Test') {
+
+            steps {
+
+                dir('devsecops-app') {
+
+                    sh 'mvn test'
+                }
+            }
+
+            post {
+
+                always {
+
+                    junit allowEmptyResults: true,
+                    testResults: '**/target/surefire-reports/*.xml'
+                }
+
+                success {
+
+                    echo 'All unit tests passed successfully'
+                }
+
+                failure {
+
+                    echo 'Unit tests failed. Stopping pipeline.'
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+
+            steps {
+
+                dir('devsecops-app') {
+
+                    withSonarQubeEnv('sonarqube') {
+
+                        sh '''
+                        mvn sonar:sonar \
+                        -Dsonar.projectKey=devsecops-app \
+                        -Dsonar.projectName=devsecops-app
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+
+            steps {
+
+                timeout(time: 5, unit: 'MINUTES') {
+
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+                stage('Package') {
+
+            steps {
+
+                dir('devsecops-app') {
+
+                    sh 'mvn package'
+                }
+            }
+        }
+
+       
+        stage('Docker Build') {
+
+            steps {
+
+                dir('devsecops-app') {
+
+                    sh '''
+                    docker build \
+                    -t parimal1984/devsecops-app:${BUILD_NUMBER} .
+                    '''
+                }
+            }
+        }
+
+       
+        stage('Docker Push to DockerHub') {
+
+            steps {
+
+                script {
+
+                    withCredentials([usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )]) {
+
+                        sh '''
+                        echo "$DOCKER_PASS" | docker login \
+                        -u "$DOCKER_USER" --password-stdin
+
+                        docker push \
+                        $DOCKER_USER/devsecops-app:${BUILD_NUMBER}
+                        '''
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+
+        always {
+
+            sh '''
+            pkill -f devsecops-app || true
+            '''
+
+            archiveArtifacts artifacts: '**/target/*.jar',
+            allowEmptyArchive: true
+        }
+    }
+}
