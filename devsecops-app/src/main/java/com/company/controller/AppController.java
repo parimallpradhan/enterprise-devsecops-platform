@@ -8,6 +8,6 @@ public class AppController {
 
     @GetMapping("/")
     public String home() {
-        return "DevSecOps App Running - 2026 13th june ";
+        return "DevSecOps Java app - 2026 13th june ";
     }
 }
