@@ -78,8 +78,9 @@ pipeline {
                 dir('devsecops-app') {
 
                     sh '''
-                    docker build \
-                    -t parimal1984/devsecops-app:${BUILD_NUMBER} .
+                  docker build \
+                -t parimal1984/devsecops-app:${BUILD_NUMBER} \
+                -t parimal1984/devsecops-app:latest .
                     '''
                 }
             }
