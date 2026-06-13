@@ -18,7 +18,11 @@ pipeline {
             }
         }
 
-        stage('Compile') {
+stage('Parallel Checks') {
+
+    parallel {
+
+       stage('Compile') {
 
             steps {
 
@@ -29,7 +33,7 @@ pipeline {
             }
         }
 
-        stage('Test') {
+      stage('Test') {
 
             steps {
 
@@ -58,6 +62,10 @@ pipeline {
                 }
             }
         }
+    }
+}
+       
+    
 
     stage('Package') {
 
