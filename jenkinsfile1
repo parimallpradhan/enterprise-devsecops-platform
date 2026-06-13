@@ -102,8 +102,8 @@ pipeline {
                         echo "$DOCKER_PASS" | docker login \
                         -u "$DOCKER_USER" --password-stdin
 
-                        docker push \
-                        $DOCKER_USER/devsecops-app:${BUILD_NUMBER}
+                        docker push $DOCKER_USER/devsecops-app:${BUILD_NUMBER}
+                        docker push $DOCKER_USER/devsecops-app:latest
                         '''
                     }
                 }
