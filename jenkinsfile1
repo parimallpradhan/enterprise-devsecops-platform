@@ -111,6 +111,22 @@ pipeline {
             }
         }
     }
+stage('Deploy to EKS') {
+
+    steps {
+
+        dir('devsecops-app/k8s') {
+
+            sh '''
+            
+            kubectl apply -f deployment.yaml
+
+            kubectl apply -f service.yaml
+
+            '''
+        }
+    }
+}
 
     post {
 
