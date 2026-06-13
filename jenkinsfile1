@@ -123,6 +123,8 @@ stage('Deploy to EKS') {
 
             kubectl apply -f service.yaml
 
+           kubectl rollout restart deployment devsecops-app
+
             '''
         }
     }
